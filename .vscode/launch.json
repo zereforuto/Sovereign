@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Sovereign (Edge)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "edge",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
+    },
+    {
+      "name": "Sovereign (Chrome)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
+    },
+    {
+      "name": "Sovereign (Windows Desktop)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "windows",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
+    }
+  ]
+}
