@@ -3,6 +3,9 @@ import 'package:sovereign/features/auth/domain/app_user.dart';
 import 'package:sovereign/features/auth/domain/auth_repository.dart';
 import 'package:sovereign/features/tasks/domain/task_repository.dart';
 import 'package:sovereign/features/tasks/domain/todo_task.dart';
+import 'package:sovereign/features/habits/domain/habit.dart';
+import 'package:sovereign/features/habits/domain/habit_repository.dart';
+import 'package:sovereign/features/habits/domain/streaks.dart';
 
 class FakeAuthRepository implements AuthRepository {
   final StreamController<AppUser?> _controller =
@@ -110,4 +113,78 @@ class FakeTaskRepository implements TaskRepository {
     _controller.close();
   }
 }
+
+class FakeHabitRepository implements HabitRepository {
+  final StreamController<List<Habit>> _habitsController =
+      StreamController<List<Habit>>.broadcast();
+  final StreamController<List<HabitCheckin>> _checkinsController =
+      StreamController<List<HabitCheckin>>.broadcast();
+
+  List<Habit> _habits;
+  List<HabitCheckin> _checkins;
+
+  final List<String> checkinCalls = [];
+  final List<String> archivedIds = [];
+
+  FakeHabitRepository({
+    List<Habit>? initialHabits,
+    List<HabitCheckin>? initialCheckins,
+  })  : _habits = List<Habit>.from(initialHabits ?? []),
+        _checkins = List<HabitCheckin>.from(initialCheckins ?? []);
+
+  @override
+  Stream<List<Habit>> watchHabits() async* {
+    yield _habits;
+    yield* _habitsController.stream;
+  }
+
+  @override
+  Stream<List<HabitCheckin>> watchCheckins() async* {
+    yield _checkins;
+    yield* _checkinsController.stream;
+  }
+
+  @override
+  Future<void> create(Habit draft) async {
+    final created = draft.copyWith(id: 'habit-${_habits.length + 1}');
+    _habits = [..._habits, created];
+    _habitsController.add(_habits);
+  }
+
+  @override
+  Future<void> archive(String id) async {
+    archivedIds.add(id);
+    _habits = _habits.map((h) {
+      if (h.id == id) {
+        return h.copyWith(archivedAt: DateTime.now());
+      }
+      return h;
+    }).toList();
+    _habitsController.add(_habits);
+  }
+
+  @override
+  Future<void> setCheckin(String habitId, DateTime date, bool done) async {
+    final d = dateOnly(date);
+    checkinCalls.add('$habitId:$d:$done');
+
+    if (done) {
+      _checkins = [
+        ..._checkins.where((c) => !(c.habitId == habitId && dateOnly(c.date) == d)),
+        HabitCheckin(habitId: habitId, date: d),
+      ];
+    } else {
+      _checkins = _checkins
+          .where((c) => !(c.habitId == habitId && dateOnly(c.date) == d))
+          .toList();
+    }
+    _checkinsController.add(_checkins);
+  }
+
+  void dispose() {
+    _habitsController.close();
+    _checkinsController.close();
+  }
+}
+
 
