@@ -8,6 +8,8 @@ import 'package:sovereign/features/habits/domain/habit_repository.dart';
 import 'package:sovereign/features/habits/domain/streaks.dart';
 import 'package:sovereign/features/focus/domain/focus_repository.dart';
 import 'package:sovereign/features/focus/domain/focus_session.dart';
+import 'package:sovereign/features/workouts/domain/workout.dart';
+import 'package:sovereign/features/workouts/domain/workout_repository.dart';
 
 class FakeAuthRepository implements AuthRepository {
   final StreamController<AppUser?> _controller =
@@ -224,5 +226,39 @@ class FakeFocusRepository implements FocusRepository {
   }
 }
 
+class FakeWorkoutRepository implements WorkoutRepository {
+  final StreamController<List<Workout>> _controller =
+      StreamController<List<Workout>>.broadcast();
 
+  List<Workout> _workouts;
+  final List<Workout> savedWorkouts = [];
+  final List<String> deletedIds = [];
 
+  FakeWorkoutRepository({List<Workout>? initialWorkouts})
+      : _workouts = List<Workout>.from(initialWorkouts ?? []);
+
+  @override
+  Stream<List<Workout>> watchWorkouts() async* {
+    yield _workouts;
+    yield* _controller.stream;
+  }
+
+  @override
+  Future<void> saveWorkout(Workout workout) async {
+    savedWorkouts.add(workout);
+    final saved = workout.copyWith(id: 'workout-${_workouts.length + 1}');
+    _workouts = [saved, ..._workouts];
+    _controller.add(_workouts);
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    deletedIds.add(id);
+    _workouts = _workouts.where((w) => w.id != id).toList();
+    _controller.add(_workouts);
+  }
+
+  void dispose() {
+    _controller.close();
+  }
+}
