@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sovereign/core/router/app_shell.dart';
 import 'package:sovereign/core/supabase/supabase_providers.dart';
+import 'package:sovereign/features/auth/presentation/sign_in_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -28,9 +29,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/sign-in',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Sign In Screen')),
-        ),
+        builder: (context, state) => const SignInScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(
