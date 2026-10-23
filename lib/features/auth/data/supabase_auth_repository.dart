@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sovereign/core/errors/guard.dart';
 import 'package:sovereign/features/auth/domain/app_user.dart';
 import 'package:sovereign/features/auth/domain/auth_repository.dart';
@@ -40,7 +41,10 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<void> signInWithGoogle() {
     return guard(() async {
-      await _client.auth.signInWithOAuth(OAuthProvider.google);
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? Uri.base.origin : null,
+      );
     });
   }
 
