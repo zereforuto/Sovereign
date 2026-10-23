@@ -6,7 +6,10 @@ import 'package:sovereign/core/supabase/supabase_providers.dart';
 import 'package:sovereign/features/auth/presentation/sign_in_screen.dart';
 import 'package:sovereign/features/focus/presentation/focus_screen.dart';
 import 'package:sovereign/features/habits/presentation/habits_screen.dart';
+import 'package:sovereign/features/planner/presentation/planner_screen.dart';
+import 'package:sovereign/features/settings/presentation/settings_screen.dart';
 import 'package:sovereign/features/tasks/presentation/tasks_screen.dart';
+import 'package:sovereign/features/workouts/presentation/workouts_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -67,9 +70,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/workouts',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('Workouts Screen')),
-                ),
+                builder: (context, state) => const WorkoutsScreen(),
               ),
             ],
           ),
@@ -77,9 +78,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/planner',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('Planner Screen')),
-                ),
+                builder: (context, state) => const PlannerScreen(),
               ),
             ],
           ),
@@ -87,9 +86,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/settings',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('Settings Screen')),
-                ),
+                builder: (context, state) => const SettingsScreen(),
               ),
             ],
           ),
