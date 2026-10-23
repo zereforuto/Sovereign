@@ -1,0 +1,104 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sovereign/core/router/app_shell.dart';
+import 'package:sovereign/core/supabase/supabase_providers.dart';
+
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+/// Application router with auth redirection guard.
+final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateChangesProvider);
+
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: '/tasks',
+    redirect: (context, state) {
+      final isAuth = authState.asData?.value != null;
+      final isSignInLocation = state.uri.path == '/sign-in';
+
+      if (!isAuth && !isSignInLocation) {
+        return '/sign-in';
+      }
+      if (isAuth && isSignInLocation) {
+        return '/tasks';
+      }
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: '/sign-in',
+        builder: (context, state) => const Scaffold(
+          body: Center(child: Text('Sign In Screen')),
+        ),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => AppShell(
+          navigationShell: navigationShell,
+        ),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/tasks',
+                builder: (context, state) => const Scaffold(
+                  body: Center(child: Text('Tasks Screen')),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/habits',
+                builder: (context, state) => const Scaffold(
+                  body: Center(child: Text('Habits Screen')),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/focus',
+                builder: (context, state) => const Scaffold(
+                  body: Center(child: Text('Focus Screen')),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/workouts',
+                builder: (context, state) => const Scaffold(
+                  body: Center(child: Text('Workouts Screen')),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/planner',
+                builder: (context, state) => const Scaffold(
+                  body: Center(child: Text('Planner Screen')),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (context, state) => const Scaffold(
+                  body: Center(child: Text('Settings Screen')),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+});
