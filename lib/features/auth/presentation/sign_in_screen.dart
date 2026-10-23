@@ -21,6 +21,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  String? _infoMessage;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -34,6 +36,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _infoMessage = null;
     });
 
     try {
@@ -43,6 +46,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
       if (_isSignUp) {
         await repo.signUpWithEmail(email, password);
+        if (mounted) {
+          setState(() {
+            _infoMessage =
+                'Account created! If email confirmation is enabled on your Supabase project, check your inbox to confirm, or click Sign In.';
+          });
+        }
       } else {
         await repo.signInWithEmail(email, password);
       }
@@ -131,6 +140,25 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             _errorMessage!,
                             style: const TextStyle(
                               color: SovereignColors.warning,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      if (_infoMessage != null) ...[
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: SovereignColors.info.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(2),
+                            border: Border.all(color: SovereignColors.info),
+                          ),
+                          child: Text(
+                            _infoMessage!,
+                            style: const TextStyle(
+                              color: SovereignColors.info,
                               fontSize: 13,
                             ),
                           ),
