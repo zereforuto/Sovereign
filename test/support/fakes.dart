@@ -6,6 +6,8 @@ import 'package:sovereign/features/tasks/domain/todo_task.dart';
 import 'package:sovereign/features/habits/domain/habit.dart';
 import 'package:sovereign/features/habits/domain/habit_repository.dart';
 import 'package:sovereign/features/habits/domain/streaks.dart';
+import 'package:sovereign/features/focus/domain/focus_repository.dart';
+import 'package:sovereign/features/focus/domain/focus_session.dart';
 
 class FakeAuthRepository implements AuthRepository {
   final StreamController<AppUser?> _controller =
@@ -186,5 +188,41 @@ class FakeHabitRepository implements HabitRepository {
     _checkinsController.close();
   }
 }
+
+class FakeFocusRepository implements FocusRepository {
+  final StreamController<List<FocusSession>> _controller =
+      StreamController<List<FocusSession>>.broadcast();
+
+  List<FocusSession> _sessions;
+  final List<FocusSession> savedSessions = [];
+
+  FakeFocusRepository({List<FocusSession>? initialSessions})
+      : _sessions = List<FocusSession>.from(initialSessions ?? []);
+
+  @override
+  Stream<List<FocusSession>> watchSessions() async* {
+    yield _sessions;
+    yield* _controller.stream;
+  }
+
+  @override
+  Future<void> saveSession(FocusSession session) async {
+    savedSessions.add(session);
+    final saved = FocusSession(
+      id: 'session-${_sessions.length + 1}',
+      taskId: session.taskId,
+      startedAt: session.startedAt,
+      durationSeconds: session.durationSeconds,
+      completed: session.completed,
+    );
+    _sessions = [saved, ..._sessions];
+    _controller.add(_sessions);
+  }
+
+  void dispose() {
+    _controller.close();
+  }
+}
+
 
 

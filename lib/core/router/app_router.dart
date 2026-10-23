@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sovereign/core/router/app_shell.dart';
 import 'package:sovereign/core/supabase/supabase_providers.dart';
 import 'package:sovereign/features/auth/presentation/sign_in_screen.dart';
+import 'package:sovereign/features/focus/presentation/focus_screen.dart';
 import 'package:sovereign/features/habits/presentation/habits_screen.dart';
 import 'package:sovereign/features/tasks/presentation/tasks_screen.dart';
 
@@ -58,9 +59,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/focus',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('Focus Screen')),
-                ),
+                builder: (context, state) => const FocusScreen(),
               ),
             ],
           ),
